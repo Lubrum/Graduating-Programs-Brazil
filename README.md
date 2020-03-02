@@ -2,71 +2,35 @@
 
 This project aims to share the current state and location of Brazilian Graduating Programs in Computer Science and related areas.
 The purpose is to realize an exploratory analysis of available data about Computing Programs and generate meaningful visualizations.
+The project is separated in three stages:
+- Stage one: get the data from pdf and save into a dataframe and .csv file.
+- Stage two: validate and integrate new data to generate maps with Brazilian computer graduating programs.
+- Stage three: using shiny to provide an interactive interface for the users.
 
-# First Part
+# Stage One
 
 We will be based on this [document](https://capes.gov.br/images/stories/download/avaliacao/relatorios-finais-quadrienal-2017/20122017-CIENCIA-DA-COMPUTACAO-quadrienal.pdf) made by CAPES, the Brazilian organization responsible for Higher Education Programs evaluation.
 Our attempt is to extract the needed information from this pdf file to perform our analysis. The information that we need is in pages 29-31.
-The first thing to do is to install and load the needed packages. In Ubuntu you may need to install libcurl4 and libcurl4-openssl-dev before installing pdftools and gdal-bin, proj-bin, libgdal-dev and libproj-dev before installing rgdal. You will also need to install gifski package to create the gifs with gganimate package. (libssl in ubuntu, libudunits2-dev)
+The first thing to do is to install and load the needed packages. In Ubuntu you may need to install libcurl4 and libcurl4-openssl-dev before installing pdftools and gdal-bin, proj-bin, libgdal-dev and libproj-dev before installing rgdal. You will also need to install gifski package to create the gifs with gganimate package (libssl in ubuntu, libudunits2-dev).
+
 ```R
-if (!require(pdftools)) install.packages("pdftools", repos = "http://cran.us.r-project.org")
-require(pdftools)
+if (!require(pdftools)) install.packages("pdftools")
+library(pdftools)
 
-if (!require(dplyr)) install.packages("dplyr", repos = "http://cran.us.r-project.org")
-  require(dplyr)
+if (!require(dplyr)) install.packages("dplyr")
+library(dplyr)
 
-if (!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
-require(readr)
+if (!require(readr)) install.packages("readr")
+library(readr)
 
-if (!require(stringi)) install.packages("stringi", repos = "http://cran.us.r-project.org")
-require(stringi)
+if (!require(stringi)) install.packages("stringi")
+library(stringi)
 
-if (!require(stringr)) install.packages("stringr", repos = "http://cran.us.r-project.org")
-require(stringr)
+if (!require(stringr)) install.packages("stringr")
+library(stringr)
 
-if (!require(xlsx)) install.packages("xlsx", repos = "http://cran.us.r-project.org")
-require(xlsx)
-
-if (!require(rgdal)) install.packages("rgdal", repos = "http://cran.us.r-project.org")
-require(rgdal)
-
-if (!require(ggplot2)) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
-require(ggplot2)
-
-if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
-require(RColorBrewer)
-
-if(!require(viridis)) install.packages("viridis", repos = "http://cran.us.r-project.org")
-require(viridis)
-
-if(!require(gganimate)) install.packages("gganimate", repos = "http://cran.us.r-project.org")
-require(gganimate)
-
-if(!require(ggrepel)) install.packages("ggrepel", repos = "http://cran.us.r-project.org")
-require(ggrepel)
-
-if(!require(gpclib)) install.packages("gpclib")
-require(gpclib)
-
-if(!require(maptools)) install.packages("maptools")
-require(maptools)
-
-gpclibPermit()
-
-if(!require(mapproj)) install.packages("mapproj")
-require(mapproj)
-
-if(!require(gifski)) install.packages("gifski")
-require(gifski)
-
-if(!require(png)) install.packages("png")
-require(png)
-
-if(!require(av)) install.packages("av")
-require(av)
-
-if(!require(openssl)) install.packages("openssl")
-require(openssl)
+if (!require(xlsx)) install.packages("xlsx")
+library(xlsx)
 ```
 We load the data by lines using **pdf_text** and **read_lines**, select only the data of pages 29-31 (checking the file_pdf variable and selecting specific lines **1098:1190**) and eliminate some lines with **grep** function using header words like "Coordenação" and "Diretoria", meaning that the line has not useful information about the programs.
 ```R
@@ -115,7 +79,7 @@ for(i in seq(from = 2, to = length(list_pdf), by = 5)){
 ```
 Finally, we save this data into a xlsx file with **write.xlsx** command. Here we end the first part.
 ```R
-write.xlsx(data_pdf, file = "csv/universities_before.xlsx", col.names = TRUE, row.names = TRUE, append = FALSE)
+write.xlsx(data_pdf, file = "../pdf/universities_before.xlsx", col.names = TRUE, row.names = TRUE, append = FALSE)
 ```
 NOTE: To verify if all Computer Graduating Programs were included, we checked the [Sucupira Website](https://sucupira.capes.gov.br/sucupira/public/consultas/coleta/programa/quantitativos/quantitativoIes.jsf?areaAvaliacao=2&areaConhecimento=10300007). There, we verified that 11 Programs were missing, so we manually inserted them and also included the foundation year, latitude/longitude and city id. The city id was got from [here](https://github.com/kelvins/Municipios-Brasileiros/tree/master/csv), where we got the Brazilian states and cities information. The shapefile that we will use was got from [here](http://www.uel.br/laboratorios/lapege/pages/base-de-dados-shp-do-brasil.php). You can get from [here](http://forest-gis.com/download-de-shapefiles/) too.
 We also included the research topics of each one of the programs. To do that we went to each website of each program and registered each research topic. 
@@ -131,10 +95,31 @@ The structure of all extracted and collected data is divided in the following fi
 - concentration_area: the concentration area of graduating programs.
 - university_concentration_area.xlsx: join between the graduating programs and its concentration area.
 
-# Second Part
-Now, we have all data needed to perform our analysis. First, we load the needed data and check how they are organized.
+# Stage Two
+Now, we have all data needed to perform our analysis. First, we load the needed packages and data and check how they are organized.
 
 ```R
+if (!require(xlsx)) install.packages("xlsx")
+library(xlsx)
+
+if (!require(rgdal)) install.packages("rgdal")
+library(rgdal)
+
+if (!require(rgeos)) install.packages("rgeos")
+library(rgeos)
+
+if (!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+if(!require(maptools)) install.packages("maptools")
+library(maptools)
+
+if (!require(dplyr)) install.packages("dplyr")
+library(dplyr)
+
+if (!require(forcats)) install.packages("forcats")
+library(forcats)
+
 universities <- read.xlsx("csv/universities_after.xlsx", sheetIndex = 1, encoding = "UTF-8")
 brazilian_cities <- read.csv("csv/brazilian_cities.csv", sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
 brazilian_states <- read.csv("csv/brazilian_states.csv",sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
@@ -144,7 +129,6 @@ graduation_level <- read.xlsx("csv/graduation_level.xlsx", sheetIndex = 1, encod
 course_name <- read.xlsx("csv/course_name.xlsx", sheetIndex = 1, encoding = "UTF-8")
 concentration_area <- read.xlsx("csv/concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
 university_concentration_area <- read.xlsx("csv/university_concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
-shape_brazil <- readOGR("shapefile/Brazil.shp", "Brazil", use_iconv = TRUE)
 ```
 
 Now we join the data from all excel files to a single dataframe, using **left_join** function.
@@ -164,9 +148,9 @@ From now on we will not use the ids, so we removed them too. We also convert the
 
 ```R
 all_data <- all_data[,-9]
-all_data <- all_data[,-13]
-all_data <- all_data[,-13]
-all_data <- all_data[,-15]
+all_data <- all_data[,-14]
+all_data <- all_data[,-16]
+all_data <- all_data[,-19]
 
 all_data$latitude <- as.numeric(as.character(all_data$latitude))
 all_data$longitude <- as.numeric(as.character(all_data$longitude))
@@ -377,5 +361,15 @@ dbWriteTable(con, "university_concentration_area", value = university_concentrat
 dbDisconnect(con)
 dbUnloadDriver(drv)
 ```
+
+# Stage Three
+
+Now, we proceed to generate our shiny app with this data. We have three main files:
+
+ui.R -> related with user interface and data inputs to the app. 
+server.R -> related with backend processing, data input processing, reactive responses and plotting outputs.
+get_data.R -> gets all needed data to show in UI and to process in the server.
+
+In the next weeks these files will be approached in details.
 
 That's it. I need people to contribute with this project, to keep all this data up to date with Sucupira website. Anyone who wants to help, leave a message and let's work together. 
