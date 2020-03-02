@@ -366,9 +366,9 @@ dbUnloadDriver(drv)
 
 Now, we proceed to generate our shiny app with this data. We have three main files:
 
-ui.R -> related with user interface and data inputs to the app. 
-server.R -> related with backend processing, data input processing, reactive responses and plotting outputs.
-get_data.R -> gets all needed data to show in UI and to process in the server.
+- ui.R -> related with user interface and data inputs to the app. 
+- server.R -> related with backend processing, data input processing, reactive responses and plotting outputs.
+- get_data.R -> gets all needed data to show in UI and to process in the server.
 
 In the next weeks these files will be approached in details.
 
