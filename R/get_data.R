@@ -148,7 +148,7 @@ for( i in 1:length(unique(lineplot_1_data$research_name)) ) {
   for (j in min(lineplot_1_data$year):max(lineplot_1_data$year) ) {
     if (j %in% lineplot_1_data$year[lineplot_1_data$research_name == name]){
       last_year <- j
-      last_cumsum <- lineplot_1_data$cumsum[lineplot_1_data$research_name == name & line_1_data$year == j]
+      last_cumsum <- lineplot_1_data$cumsum[lineplot_1_data$research_name == name & lineplot_1_data$year == j]
     } 
     else {
       lineplot_1_data <- rbind.data.frame(lineplot_1_data, c(name, j, 0, last_cumsum),stringsAsFactors = FALSE)

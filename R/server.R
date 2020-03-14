@@ -96,8 +96,8 @@ server <- function(input, output, session) {
   
   line_data <- reactive({ 
     
-    line_data <- if (input$Input_Research_2 == "Nenhum") line_1_data[line_1_data$research_name == input$Input_Research_1,] 
-    else line_1_data[line_1_data$research_name == input$Input_Research_1 | line_1_data$research_name == input$Input_Research_2,]
+    line_data <- if (input$Input_Research_2 == "Nenhum") lineplot_1_data[lineplot_1_data$research_name == input$Input_Research_1,] 
+    else lineplot_1_data[lineplot_1_data$research_name == input$Input_Research_1 | lineplot_1_data$research_name == input$Input_Research_2,]
     
   })
   
@@ -114,25 +114,25 @@ server <- function(input, output, session) {
       coord_map() + 
       guides(colour = guide_legend(override.aes = list(size = 5)), shape = guide_legend(override.aes = list(size = 5)), size = FALSE) +
       ggtitle("Programas de Pós-Graduação em Computação") +
-      labs + theme + 
+      map_labs + map_theme + 
       geom_text_repel(data = map_data()[!duplicated(map_data()$code),], aes(x = longitude, y = latitude, label = code), position = position_dodge(width = 5), hjust = -0.5)
   })
   
-  output$histogram_1 <- renderPlot({ 
-    ggplot(data = histogram_1_data, aes(x = state_code, y = id)) +
+  output$bar_1 <- renderPlot({ 
+    ggplot(data = barplot_1_data, aes(x = state_code, y = id)) +
       geom_bar(stat = "identity", fill = "black", color = "#E4F00A" ) + 
-      geom_text(data = histogram_1_data, aes(label = id), vjust = 1.6, color = "white", size = 6) +
-      scale_y_continuous(breaks = seq(0, max(histogram_1_data$id), 2)) +
-      histogram_1_labs + geral_1_theme + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+      geom_text(data = barplot_1_data, aes(label = id), vjust = 1.6, color = "white", size = 6) +
+      scale_y_continuous(breaks = seq(0, max(barplot_1_data$id), 2)) +
+      barplot_1_labs + geral_1_theme + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
   })
   
-  output$histogram_2 <- renderPlot({ 
-    ggplot(data = histogram_2_data, aes(x = research_name, y = id)) +
+  output$bar_2 <- renderPlot({ 
+    ggplot(data = barplot_2_data, aes(x = research_name, y = id)) +
       geom_bar(stat = 'identity', position = position_stack(reverse = TRUE), fill = "black", color = "#22FF00") +
-      geom_text(data = histogram_2_data, aes(label = id), hjust = 1.2, color = "white", size = 5) +
-      scale_y_continuous(breaks = seq(0, max(histogram_2_data$id), 5)) +
+      geom_text(data = barplot_2_data, aes(label = id), hjust = 1.2, color = "white", size = 5) +
+      scale_y_continuous(breaks = seq(0, max(barplot_2_data$id), 5)) +
       coord_flip() +
-      histogram_2_labs + geral_1_theme +  theme(axis.title.y = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank())
+      barplot_2_labs + geral_1_theme +  theme(axis.title.y = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank())
   })
   
   output$line_1 <- renderPlot({ 
@@ -141,7 +141,7 @@ server <- function(input, output, session) {
       scale_color_manual(values = c("#E4F00A", "#22FF00")) +
       guides(colour = FALSE) +
       scale_x_continuous(expand = c(0, 0), limits = c(1965, 2030), breaks = seq(min(line_data()$year), max(line_data()$year), 2)) +
-      line_1_labs + geral_1_theme + theme(panel.grid.major = element_line(color = "#666666")) +
+      lineplot_1_labs + geral_1_theme + theme(panel.grid.major = element_line(color = "#666666")) +
       geom_dl(aes(label = str_wrap(research_name, 30), color = research_name), method = list(cex = 1, dl.trans(x = x + .3), "last.qp")) 
   })
 }

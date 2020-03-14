@@ -71,7 +71,7 @@ ui <- navbarPage(
                     title = "Programas de Pós-Graduação em Computação por Estado",
                     solidHeader = TRUE,
                     collapsible = TRUE,
-                    plotOutput("histogram_1"),
+                    plotOutput("bar_1"),
                     width = 6
                   )
                   ,
@@ -80,7 +80,7 @@ ui <- navbarPage(
                     title = "Programas de Pós-Graduação em Computação por Tópico de Pesquisa",
                     solidHeader = TRUE,
                     collapsible = TRUE,
-                    plotOutput("histogram_2"),
+                    plotOutput("bar_2"),
                     width = 6
                   )
                 ),
@@ -106,8 +106,8 @@ ui <- navbarPage(
                       selectInput(
                         "Input_Research_1",
                         "Tópico de Pesquisa 1",
-                        choices = sort(unique(line_1_data$research_name)),
-                        selected = line_1_data$research_name[1]
+                        choices = sort(unique(lineplot_1_data$research_name)),
+                        selected = lineplot_1_data$research_name[1]
                       )
                     ),
                     box(
@@ -115,7 +115,7 @@ ui <- navbarPage(
                       selectInput(
                         "Input_Research_2",
                         "Tópico de Pesquisa 2",
-                        choices = c("Nenhum", as.character(sort(unique(line_1_data$research_name)))),
+                        choices = c("Nenhum", as.character(sort(unique(lineplot_1_data$research_name)))),
                         selected = "Nenhum"
                       )
                     ),
