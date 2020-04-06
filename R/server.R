@@ -109,7 +109,7 @@ server <- function(input, output, session) {
     ggplot() + 
       geom_polygon(data = map_shapes(), aes(x = long, y = lat, group = group), fill = "white", color = "black", size = 0.15) +
       geom_point(data = map_data()[!duplicated(map_data()$code),], aes(x = longitude, y = latitude, color = grade, size = 10, shape = graduation_level, alpha = I(2/grade))) + 
-      scale_color_viridis(name = "Conceito", breaks = mybreaks) +
+      scale_color_viridis(name = "Conceito", breaks = as.numeric(c(3, 4, 5, 6, 7))) +
       scale_shape_discrete(name = "Nível do Programa") +
       coord_map() + 
       guides(colour = guide_legend(override.aes = list(size = 5)), shape = guide_legend(override.aes = list(size = 5)), size = FALSE) +

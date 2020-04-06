@@ -1,7 +1,9 @@
 # loading / installing packages
+#sudo apt install default-jdk -> rjava package dependency
 if (!require(xlsx)) install.packages("xlsx")
 library(xlsx)
 
+#sudo apt install libgdal-dev -> https://stackoverflow.com/questions/12141422/error-gdal-config-not-found
 if (!require(rgdal)) install.packages("rgdal")
 library(rgdal)
 
@@ -61,27 +63,6 @@ shape_brazil$id <- rownames(as.data.frame(shape_brazil))
 coordinates_brazil <- fortify(shape_brazil, region = "id") # only coordinates
 shape_brasil_df <- merge(coordinates_brazil, shape_brazil, by = "id", type = 'left') # add remaining attributes
 
-# map theme and labs
-map_theme <- theme(
-  axis.text = element_text(size = 16),
-  plot.caption = element_text(size = 12, face = "bold"),
-  axis.title = element_text(size = 18, face = "bold"),
-  legend.title = element_text(size = 18), 
-  legend.text = element_text(size = 14),
-  legend.key.size = unit(1.0, "cm"),
-  legend.key.width = unit(0.4,"cm"),
-  text = element_text(color = "#22211d"), 
-  legend.background = element_rect(fill = "#dddddd", color = "black"),
-  panel.background = element_rect(fill = "#BFD5E3", colour = "#6D9EC1"),
-  plot.title = element_text(size = 22, hjust = 0.5, color = "#4e4d47")
-)
-
-map_labs <- labs(
-  x = "Longitude", 
-  y = "Latitude", 
-  caption = "Fonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
-) 
-
 # data from barplot 1
 barplot_1_data <- as.data.frame(
   all_data %>%
@@ -90,30 +71,6 @@ barplot_1_data <- as.data.frame(
   arrange(-id) %>%
   mutate(state_code = fct_reorder(state_code, -id))
 )
-
-# theme and labs from barplot 1
-geral_1_theme <- theme(
-  axis.text = element_text(size = 12, color = "#cccccc"),
-  axis.title = element_text(size = 16, face = "bold", color = "#cccccc"),
-  axis.ticks = element_line(colour = "#cccccc"),
-  axis.ticks.length = unit(0.5, "cm"),
-  axis.ticks.margin = unit(0.8, "cm"),
-  plot.caption = element_text(size = 12, face = "bold", color = "#cccccc"),
-  plot.title = element_text(size = 22, hjust = 0.5, color = "#ffffff"),
-  plot.background = element_rect(fill = "black"),
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  panel.background = element_rect(fill = 'black'),
-  legend.background = element_rect(fill = "black", color = NA),
-  legend.key = element_rect(color = "gray", fill = "black"),
-  text = element_text(color = "#cccccc")
-)
-
-barplot_1_labs <- labs(
-  x = "\nEstados do Brasil", 
-  y = "\nNúmero de Programas\n", 
-  caption = "\nFonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
-) 
 
 # data from barplot 2
 barplot_2_data <- as.data.frame(
@@ -124,12 +81,6 @@ barplot_2_data <- as.data.frame(
   mutate(research_name = fct_reorder(research_name, -id)) %>%
   filter( id > 10 )
 )
-
-# labs from barplot 2
-barplot_2_labs <- labs(
-  y = "Número de Programas de Pós-Graduação", 
-  caption = "\nFonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
-) 
 
 # data from line plot 1
 lineplot_1_data <- as.data.frame(
@@ -161,15 +112,63 @@ lineplot_1_data$id <- as.numeric(lineplot_1_data$id)
 lineplot_1_data$cumsum <- as.numeric(lineplot_1_data$cumsum)
 lineplot_1_data <- lineplot_1_data[order(lineplot_1_data$year),]
 
+# map theme and labs
+map_theme <- theme(
+  axis.text = element_text(size = 16),
+  plot.caption = element_text(size = 12, face = "bold"),
+  axis.title = element_text(size = 18, face = "bold"),
+  legend.title = element_text(size = 18), 
+  legend.text = element_text(size = 14),
+  legend.key.size = unit(1.0, "cm"),
+  legend.key.width = unit(0.4,"cm"),
+  text = element_text(color = "#22211d"), 
+  legend.background = element_rect(fill = "#dddddd", color = "black"),
+  panel.background = element_rect(fill = "#BFD5E3", colour = "#6D9EC1"),
+  plot.title = element_text(size = 22, hjust = 0.5, color = "#4e4d47")
+)
+
+map_labs <- labs(
+  x = "Longitude", 
+  y = "Latitude", 
+  caption = "Fonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
+) 
+
+# theme and labs from barplot 1
+geral_1_theme <- theme(
+  axis.text = element_text(size = 12, color = "#cccccc"),
+  axis.title = element_text(size = 16, face = "bold", color = "#cccccc"),
+  axis.ticks = element_line(colour = "#cccccc"),
+  axis.ticks.length = unit(0.5, "cm"),
+  axis.ticks.margin = unit(0.8, "cm"),
+  plot.caption = element_text(size = 12, face = "bold", color = "#cccccc"),
+  plot.title = element_text(size = 22, hjust = 0.5, color = "#ffffff"),
+  plot.background = element_rect(fill = "black"),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_rect(fill = 'black'),
+  legend.background = element_rect(fill = "black", color = NA),
+  legend.key = element_rect(color = "gray", fill = "black"),
+  text = element_text(color = "#cccccc")
+)
+
+barplot_1_labs <- labs(
+  x = "\nEstados do Brasil", 
+  y = "\nNúmero de Programas\n", 
+  caption = "\nFonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
+) 
+
+# labs from barplot 2
+barplot_2_labs <- labs(
+  y = "Número de Programas de Pós-Graduação", 
+  caption = "\nFonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
+) 
+
 # labs from line plot 1
 lineplot_1_labs <- labs(
   x = "\nAnos", 
   y = "Número de Programas\n", 
   caption = "\nFonte: Programas de Pós-Graduação em Computação - Plataforma Sucupira."
 ) 
-
-# possible values for CAPES concept 
-mybreaks <- as.numeric(c(3, 4, 5, 6, 7))
 
 # saving data
 save.image(file = "R/data/all_data.RData")

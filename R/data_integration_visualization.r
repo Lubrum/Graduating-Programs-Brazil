@@ -1,3 +1,8 @@
+#Created by: Luciano Brum
+#Last modified: 5 apr, 2020
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 if (!require(dplyr)) install.packages("dplyr")
 library(dplyr)
 
@@ -53,22 +58,33 @@ if(!require(openssl)) install.packages("openssl")
 library(openssl)
 
 # reading data from csv
-universities <- read.xlsx("csv/universities_after.xlsx", sheetIndex = 1, encoding = "UTF-8")
-brazilian_cities <- read.csv("csv/brazilian_cities.csv", sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
-brazilian_states <- read.csv("csv/brazilian_states.csv",sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
-research_names <- read.xlsx("csv/research_names.xlsx", sheetIndex = 1, encoding = "UTF-8")
-university_research <- read.xlsx("csv/university_research.xlsx", sheetIndex = 1, encoding = "UTF-8")
-graduation_level <- read.xlsx("csv/graduation_level.xlsx", sheetIndex = 1, encoding = "UTF-8")
-course_name <- read.xlsx("csv/course_name.xlsx", sheetIndex = 1, encoding = "UTF-8")
-concentration_area <- read.xlsx("csv/concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
-university_concentration_area <- read.xlsx("csv/university_concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
+universities_path <- "../csv/universities_after.xlsx"
+cities_path <- "../csv/brazilian_cities.csv"
+states_path <- "../csv/brazilian_states.csv"
+research_names_path <- "../csv/research_names.xlsx"
+university_research_path <- "../csv/university_research.xlsx"
+graduation_level_path <- "../csv/graduation_level.xlsx"
+course_name_path <- "../csv/course_name.xlsx"
+concentration_area_path <- "../csv/concentration_area.xlsx"
+university_concentration_area_path <- "../csv/university_concentration_area.xlsx"
+
+universities <- read.xlsx(universities_path, sheetIndex = 1, encoding = "UTF-8")
+cities <- read.csv(cities_path, sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
+states <- read.csv(states_path, sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
+research_names <- read.xlsx(research_names_path, sheetIndex = 1, encoding = "UTF-8")
+university_research <- read.xlsx(university_research_path, sheetIndex = 1, encoding = "UTF-8")
+graduation_level <- read.xlsx(graduation_level_path, sheetIndex = 1, encoding = "UTF-8")
+course_name <- read.xlsx(course_name_path, sheetIndex = 1, encoding = "UTF-8")
+concentration_area <- read.xlsx(concentration_area_path, sheetIndex = 1, encoding = "UTF-8")
+university_concentration_area <- read.xlsx(university_concentration_area_path, sheetIndex = 1, encoding = "UTF-8")
 
 # reading data from shapefile
-shape_brazil <- readOGR("shapefile/Brazil.shp", "Brazil", encoding = "latin1")
+shape_brazil_path <- "../shapefile/Brazil.shp"
+shape_brazil <- readOGR(shape_brazil_path, "Brazil", encoding = "latin1")
 
 # joining data into one dataframe
-all_data <- universities %>% left_join(brazilian_cities, by = c("city_id" = "ibge_code"))
-all_data <- all_data %>% left_join(brazilian_states, by = c("state_id" = "state_id"))
+all_data <- universities %>% left_join(cities, by = c("city_id" = "ibge_code"))
+all_data <- all_data %>% left_join(states, by = c("state_id" = "state_id"))
 all_data <- all_data %>% left_join(university_research, by = c("id" = "university_id"))
 all_data <- all_data %>% left_join(research_names, by = c("research_id" = "id"))
 all_data <- all_data %>% left_join(graduation_level, by = c("level" = "id"))
@@ -88,6 +104,28 @@ all_data$grade <- as.numeric(as.character(all_data$grade))
 # possible values for CAPES concept 
 mybreaks <- as.numeric(c(3, 4, 5, 6, 7))
 
+# black theme
+theme <- theme(axis.text = element_text(size = 16),
+               plot.caption = element_text(size = 12, face = "bold", color = "white"),
+               axis.title = element_text(size = 18, face = "bold", color = "white"),
+               legend.title = element_text(size = 18, color = "white"), 
+               legend.text = element_text(size = 14, color = "white"),
+               legend.key.size = unit(1.0, "cm"),
+               legend.key.width = unit(0.4, "cm"),
+               text = element_text(color = "white"), 
+               legend.background = element_rect(fill = "black"),
+               panel.background = element_rect(fill = "black"),
+               plot.title = element_text(size = 19, hjust = 0.5, color = "white"),
+               panel.grid.minor.y = element_line(size =.1, color = "grey"),
+               panel.grid.minor.x = element_line(size =.1, color = "grey"),
+               panel.grid.major.y = element_line(size =.1, color = "grey"),
+               panel.grid.major.x = element_line(size =.1, color = "grey"),
+               plot.background = element_rect(fill = "black"),
+               axis.text.x = element_text(color = "white"),
+               axis.text.y = element_text(color = "white"),
+               axis.title.x = element_text(color = "white"),
+               axis.title.y = element_text(color = "white"))
+
 # general map theme and labs
 theme <- theme(axis.text = element_text(size = 16),
               plot.caption = element_text(size = 12, face = "bold"),
@@ -95,7 +133,7 @@ theme <- theme(axis.text = element_text(size = 16),
               legend.title = element_text(size = 18), 
               legend.text = element_text(size = 14),
               legend.key.size = unit(1.0, "cm"),
-              legend.key.width = unit(0.4,"cm"),
+              legend.key.width = unit(0.4, "cm"),
               text = element_text(color = "#22211d"), 
               legend.background = element_rect(fill = "#dddddd", color = "black"),
               panel.background = element_rect(fill = "#BFD5E3", colour = "#6D9EC1"),
@@ -124,11 +162,11 @@ p <- ggplot(data = all_data, aes(group = year)) +
      coord_map() +
      shadow_mark(past = TRUE) +
      guides(colour = guide_legend(override.aes = list(size = 8)), shape = guide_legend(override.aes = list(size = 8)), alpha = FALSE, size = FALSE) +
-     ggtitle("Programas de Pós-Graduação em Computação em {round(frame_time,0)}") +
+     ggtitle("Programas de Pós-Graduação em Computação {round(frame_time,0)}") +
      transition_time(year) +
      theme + labs
 
-#animate(p, nframes = 52, fps = 2, width = 980, height = 980, renderer = gifski_renderer("images/figure2.gif", loop = FALSE)) + ease_aes('cubic-in-out')
+#animate(p, nframes = 52, fps = 2, width = 1115, height = 1000, renderer = gifski_renderer("../images/figure22.gif", loop = FALSE)) + ease_aes('cubic-in-out')
 
 #animate(p, width = 1800, height = 1200, renderer = ffmpeg_renderer())
 #anim_save("nations.mp4")
@@ -138,16 +176,23 @@ p <- ggplot(data = all_data, aes(group = year)) +
 all_data_2 <- subset(all_data, all_data$research_name=="Inteligencia Artificial")
 
 ggplot() + 
-geom_polygon(data = shape_brazil, aes(x = long, y = lat, group = group), fill = "white", size = 0.1, color = "black") +
+geom_polygon(data = shape_brazil, aes(x = long, y = lat, group = group), fill = "grey", size = 0.1, color = "black") +
 geom_point(data = all_data_2[!duplicated(all_data_2$id),], aes(x = longitude, y = latitude, size = as.factor(grade), color = as.factor(grade), alpha = I(2/grade))) +
 scale_colour_manual(name = "Conceito", values = c("red","blue","dark green","green","yellow")) +
 scale_size_manual(name = "Conceito", values = mybreaks) +
-geom_text_repel(data = all_data_2[all_data_2$longitude > -45 & !duplicated(all_data_2$code),], aes(x = longitude, y = latitude, label = code, size = as.factor(6)), hjust = 0, nudge_x = -34 - subset(all_data_2, all_data_2$longitude > -45 & !duplicated(all_data_2$code))$longitude, direction = "y", show.legend = FALSE) +
-geom_text_repel(data = all_data_2[all_data_2$longitude <= -45 & !duplicated(all_data_2$code),], aes(x = longitude, y = latitude, label = code, size = as.factor(6)), hjust = 1, nudge_x = -72 - subset(all_data_2, all_data_2$longitude <= -45 & !duplicated(all_data_2$code))$longitude, direction = "y", show.legend = FALSE) + 
+geom_text_repel(data = all_data_2[all_data_2$longitude > -45 & !duplicated(all_data_2$code),], aes(x = longitude, y = latitude, label = code, size = as.factor(5)), hjust = 0, nudge_x = -34 - subset(all_data_2, all_data_2$longitude > -45 & !duplicated(all_data_2$code))$longitude, direction = "y", show.legend = FALSE, color = "black", segment.color = "black", segment.size  = 0.15) +
+geom_text_repel(data = all_data_2[all_data_2$longitude <= -45 & !duplicated(all_data_2$code),], aes(x = longitude, y = latitude, label = code, size = as.factor(5)), hjust = 1, nudge_x = -72 - subset(all_data_2, all_data_2$longitude <= -45 & !duplicated(all_data_2$code))$longitude, direction = "y", show.legend = FALSE, color = "black", segment.color = "black", segment.size  = 0.15) + 
 coord_map() + 
 guides() +
-ggtitle("Programas de Pós-Graduação com Linha de Pesquisa em Inteligência Artificial") +
-labs + theme
+ggtitle("Programas de Pós-Graduação com Pesquisa em Inteligência Artificial") +
+labs + theme + theme(
+  legend.position = c(.95, .25),
+  legend.key.size = unit(0.8, "cm"),
+  legend.box.background = element_rect(color = "white", size = 0.5),
+  legend.justification = c("right", "top"),
+  legend.box.just = "right",
+  legend.margin = margin(6, 6, 6, 6)
+)
 
 all_data_2 <- subset(all_data, all_data$concentration_area == "Teoria da Computação")
 

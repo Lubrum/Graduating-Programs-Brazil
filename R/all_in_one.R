@@ -1,3 +1,8 @@
+#Created by: Luciano Brum
+#Last modified: 5 apr, 2020
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 # loading or installing packages
 if (!require(xlsx)) install.packages("xlsx")
 library(xlsx)
@@ -26,12 +31,6 @@ library(shiny)
 if (!require(shinydashboard)) install.packages("shinydashboard")
 library(shinydashboard)
 
-if (!require(dplyr)) install.packages("dplyr")
-library(dplyr)
-
-if (!require(ggplot2)) install.packages("ggplot2")
-library(ggplot2)
-
 if(!require(RColorBrewer)) install.packages("RColorBrewer")
 library(RColorBrewer)
 
@@ -53,22 +52,30 @@ library(mapproj)
 if (!require(stringr)) install.packages("stringr")
 library(stringr)
 
-setwd("~/Lubrum/Graduating-Programs-Brazil")
-
 # reading data from csv
-universities <- read.xlsx("csv/universities_after.xlsx", sheetIndex = 1, encoding = "UTF-8")
-brazilian_cities <- read.csv("csv/brazilian_cities.csv", sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
-brazilian_states <- read.csv("csv/brazilian_states.csv",sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
-research_names <- read.xlsx("csv/research_names.xlsx", sheetIndex = 1, encoding = "UTF-8")
-university_research <- read.xlsx("csv/university_research.xlsx", sheetIndex = 1, encoding = "UTF-8")
-graduation_level <- read.xlsx("csv/graduation_level.xlsx", sheetIndex = 1, encoding = "UTF-8")
-course_name <- read.xlsx("csv/course_name.xlsx", sheetIndex = 1, encoding = "UTF-8")
-concentration_area <- read.xlsx("csv/concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
-university_concentration_area <- read.xlsx("csv/university_concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
+universities_path <- "../csv/universities_after.xlsx"
+cities_path <- "../csv/brazilian_cities.csv"
+states_path <- "../csv/brazilian_states.csv"
+research_names_path <- "../csv/research_names.xlsx"
+university_research_path <- "../csv/university_research.xlsx"
+graduation_level_path <- "../csv/graduation_level.xlsx"
+course_name_path <- "../csv/course_name.xlsx"
+concentration_area_path <- "../csv/concentration_area.xlsx"
+university_concentration_area_path <- "../csv/university_concentration_area.xlsx"
+
+universities <- read.xlsx(universities_path, sheetIndex = 1, encoding = "UTF-8")
+cities <- read.csv(cities_path, sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
+states <- read.csv(states_path, sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
+research_names <- read.xlsx(research_names_path, sheetIndex = 1, encoding = "UTF-8")
+university_research <- read.xlsx(university_research_path, sheetIndex = 1, encoding = "UTF-8")
+graduation_level <- read.xlsx(graduation_level_path, sheetIndex = 1, encoding = "UTF-8")
+course_name <- read.xlsx(course_name_path, sheetIndex = 1, encoding = "UTF-8")
+concentration_area <- read.xlsx(concentration_area_path, sheetIndex = 1, encoding = "UTF-8")
+university_concentration_area <- read.xlsx(university_concentration_area_path, sheetIndex = 1, encoding = "UTF-8")
 
 # joining data into one dataframe
-all_data <- universities %>% left_join(brazilian_cities, by = c("city_id" = "ibge_code"))
-all_data <- all_data %>% left_join(brazilian_states, by = c("state_id" = "state_id"))
+all_data <- universities %>% left_join(cities, by = c("city_id" = "ibge_code"))
+all_data <- all_data %>% left_join(states, by = c("state_id" = "state_id"))
 all_data <- all_data %>% left_join(university_research, by = c("id" = "university_id"))
 all_data <- all_data %>% left_join(research_names, by = c("research_id" = "id"))
 all_data <- all_data %>% left_join(graduation_level, by = c("level" = "id"))
@@ -85,7 +92,8 @@ all_data$longitude <- as.numeric(as.character(all_data$longitude))
 all_data$grade <- as.numeric(as.character(all_data$grade))
 
 #reading shapefile 
-shape_brazil <- readOGR("shapefile/Brazil.shp", "Brazil", encoding = "latin1")
+shape_brazil_path <- "../shapefile/Brazil.shp"
+shape_brazil <- readOGR(shape_brazil_path, "Brazil", encoding = "latin1")
 
 #transforming shapefile to dataframe format
 shape_brazil$id <- rownames(as.data.frame(shape_brazil))

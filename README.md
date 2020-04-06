@@ -14,6 +14,8 @@ Our attempt is to extract the needed information from this pdf file to perform o
 The first thing to do is to install and load the needed packages. In Ubuntu you may need to install libcurl4 and libcurl4-openssl-dev before installing pdftools and gdal-bin, proj-bin, libgdal-dev and libproj-dev before installing rgdal. You will also need to install gifski package to create the gifs with gganimate package (libssl in ubuntu, libudunits2-dev).
 
 ```R
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 if (!require(pdftools)) install.packages("pdftools")
 library(pdftools)
 
@@ -34,7 +36,8 @@ library(xlsx)
 ```
 We load the data by lines using **pdf_text** and **read_lines**, select only the data of pages 29-31 (checking the file_pdf variable and selecting specific lines **1098:1190**) and eliminate some lines with **grep** function using header words like "Coordenação" and "Diretoria", meaning that the line has not useful information about the programs.
 ```R
-file_pdf <- pdf_text("pdf/Evaluation report - Computer science.pdf") %>% read_lines()
+pdf_path <- "../pdf/Evaluation report - Computer science.pdf"
+file_pdf <- pdf_text(pdf_path) %>% read_lines()
 file_pdf <- file_pdf[1098:1190]
 file_pdf <- file_pdf[-(grep("Coordenação", file_pdf))]
 file_pdf <- file_pdf[-(grep("Diretoria", file_pdf))]
@@ -120,22 +123,32 @@ library(dplyr)
 if (!require(forcats)) install.packages("forcats")
 library(forcats)
 
-universities <- read.xlsx("csv/universities_after.xlsx", sheetIndex = 1, encoding = "UTF-8")
-brazilian_cities <- read.csv("csv/brazilian_cities.csv", sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
-brazilian_states <- read.csv("csv/brazilian_states.csv",sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
-research_names <- read.xlsx("csv/research_names.xlsx", sheetIndex = 1, encoding = "UTF-8")
-university_research <- read.xlsx("csv/university_research.xlsx", sheetIndex = 1, encoding = "UTF-8")
-graduation_level <- read.xlsx("csv/graduation_level.xlsx", sheetIndex = 1, encoding = "UTF-8")
-course_name <- read.xlsx("csv/course_name.xlsx", sheetIndex = 1, encoding = "UTF-8")
-concentration_area <- read.xlsx("csv/concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
-university_concentration_area <- read.xlsx("csv/university_concentration_area.xlsx", sheetIndex = 1, encoding = "UTF-8")
+universities_path <- "../csv/universities_after.xlsx"
+cities_path <- "../csv/brazilian_cities.csv"
+states_path <- "../csv/brazilian_states.csv"
+research_names_path <- "../csv/research_names.xlsx"
+university_research_path <- "../csv/university_research.xlsx"
+graduation_level_path <- "../csv/graduation_level.xlsx"
+course_name_path <- "../csv/course_name.xlsx"
+concentration_area_path <- "../csv/concentration_area.xlsx"
+university_concentration_area_path <- "../csv/university_concentration_area.xlsx"
+
+universities <- read.xlsx(universities_path, sheetIndex = 1, encoding = "UTF-8")
+cities <- read.csv(cities_path, sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
+states <- read.csv(states_path, sep = ",", stringsAsFactors = FALSE, encoding = "UTF-8")
+research_names <- read.xlsx(research_names_path, sheetIndex = 1, encoding = "UTF-8")
+university_research <- read.xlsx(university_research_path, sheetIndex = 1, encoding = "UTF-8")
+graduation_level <- read.xlsx(graduation_level_path, sheetIndex = 1, encoding = "UTF-8")
+course_name <- read.xlsx(course_name_path, sheetIndex = 1, encoding = "UTF-8")
+concentration_area <- read.xlsx(concentration_area_path, sheetIndex = 1, encoding = "UTF-8")
+university_concentration_area <- read.xlsx(university_concentration_area_path, sheetIndex = 1, encoding = "UTF-8")
 ```
 
 Now we join the data from all excel files to a single dataframe, using **left_join** function.
 
 ```R
-all_data <- universities %>% left_join(brazilian_cities, by = c("city_id" = "ibge_code"))
-all_data <- all_data %>% left_join(brazilian_states, by = c("state_id" = "state_id"))
+all_data <- universities %>% left_join(cities, by = c("city_id" = "ibge_code"))
+all_data <- all_data %>% left_join(states, by = c("state_id" = "state_id"))
 all_data <- all_data %>% left_join(university_research, by = c("id" = "university_id"))
 all_data <- all_data %>% left_join(research_names, by = c("research_id" = "id"))
 all_data <- all_data %>% left_join(graduation_level, by = c("level" = "id"))
@@ -155,6 +168,17 @@ all_data <- all_data[,-19]
 all_data$latitude <- as.numeric(as.character(all_data$latitude))
 all_data$longitude <- as.numeric(as.character(all_data$longitude))
 all_data$grade <- as.numeric(as.character(all_data$grade))
+```
+
+Now we load the shapefile to our environment and transform it to dataframe.
+
+```R
+shape_brazil_path <- "../shapefile/Brazil.shp"
+shape_brazil <- readOGR(shape_brazil_path, "Brazil", encoding = "latin1")
+
+shape_brazil$id <- rownames(as.data.frame(shape_brazil))
+coordinates_brazil <- fortify(shape_brazil, region = "id") # only coordinates
+shape_brasil_df <- merge(coordinates_brazil, shape_brazil, by = "id", type = 'left') # add remaining attributes
 ```
 
 To reuse some code, we save the theme and lab parameters in a variable.

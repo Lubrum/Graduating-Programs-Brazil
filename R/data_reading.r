@@ -1,3 +1,8 @@
+#Created by: Luciano Brum
+#Last modified: 5 apr, 2020
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 if (!require(pdftools)) install.packages("pdftools")
 library(pdftools)
 
@@ -16,7 +21,8 @@ library(stringr)
 if (!require(xlsx)) install.packages("xlsx")
 library(xlsx)
 
-file_pdf <- pdf_text("pdf/Evaluation report - Computer science.pdf") %>% read_lines()
+pdf_path <- "../pdf/Evaluation report - Computer science.pdf"
+file_pdf <- pdf_text(pdf_path) %>% read_lines()
 file_pdf <- file_pdf[1098:1190]
 
 file_pdf <- file_pdf[-(grep("Coordenação", file_pdf))]
