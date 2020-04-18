@@ -1,0 +1,32 @@
+#fluidPage { 
+  background-color: #222222; 
+  color: #ffffff; 
+} 
+
+body { 
+  background-color: #222222; 
+  color: #ffffff; 
+}
+
+.content-wrapper, .right-side {
+  background-color: #000000;
+}
+             
+#sidebar { 
+  background-color: #333333; 
+  color: #ffffff;
+}
+
+#mainPanel { 
+  background-color: #222222; 
+  color: #ffffff; 
+}
+
+.navbar-default {
+  background-color: #333333;
+  border-color: #ffffff;
+}
+
+.bg-black {
+  background-color: #222222 !important;
+}
