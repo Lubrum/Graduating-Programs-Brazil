@@ -1,6 +1,3 @@
-#Created by: Luciano Brum
-#Last modified: 12 apr, 2020
-
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # loading / installing packages
@@ -68,7 +65,7 @@ all_data$longitude <- as.numeric(as.character(all_data$longitude))
 all_data$grade <- as.numeric(as.character(all_data$grade))
 
 # reading shapefile 
-shape_brazil_path <- "../../shapefile/Brazil.shp"
+shape_brazil_path <- "../shapefile/Brazil.shp"
 shape_brazil <- readOGR(shape_brazil_path, "Brazil", encoding = "latin1")
 #s <- as(shape_brazil, "data.frame") do not work !!
 

@@ -1,12 +1,3 @@
-#Created by: Luciano Brum
-#Last modified: 16 apr, 2020
-
-if (!require(dplyr)) install.packages("dplyr")
-library(dplyr)
-
-if (!require(ggplot2)) install.packages("ggplot2")
-library(ggplot2)
-
 if(!require(RColorBrewer)) install.packages("RColorBrewer")
 library(RColorBrewer)
 
@@ -33,18 +24,18 @@ library(stringr)
 
 load(file = "data/all_data.RData")
 
-# Server logic ----
 shinyServer <- function(input, output, session) {
   
   observe({
+    # casos para desabilitar menu de universidades através de seleção específica no menu de estados
     if (input$input_state != "Todos") {
       shinyjs::enable("input_university")
-      states <- c("Todas", as.character(sort(unique(all_data$university[which(all_data$state_name == input$input_state)]))))
-      updateSelectInput(session, "input_university", choices = states, selected = input$input_university)
+      universities <- c("Todas", as.character(sort(unique(all_data$university[which(all_data$state_name == input$input_state)]))))
+      updateSelectInput(session, "input_university", choices = universities, selected = input$input_university)
     } else { 
       shinyjs::disable("input_university")
     }
-    
+    # casos para desabilitar menu de estados através de seleção específica no menu de universidades
     if (input$input_university == "Todas" || input$input_university == "") {
       shinyjs::enable("input_state")
     } else {
@@ -52,39 +43,58 @@ shinyServer <- function(input, output, session) {
     }
   })
   
+  # mudança/filtro nos dados do dataframe all_data com base nos inputs do usuário (mapa)
   map_data <- reactive({ 
     if(input$input_state == "Todos") {
       if(input$input_university == "Todas") {
         if(input$input_research_topic == "Todos") { 
-          map_data <- all_data[all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         } else {
-          map_data <- all_data[all_data$research_name == input$input_research_topic & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$research_name == input$input_research_topic & 
+                                 all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         }
       } else {
         if(input$input_research_topic == "Todos") {
-          map_data <- all_data[all_data$university == input$input_university & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$university == input$input_university & 
+                                 all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         } else {
-          map_data <- all_data[all_data$university == input$input_university & all_data$research_name == input$input_research_topic & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$university == input$input_university & 
+                                 all_data$research_name == input$input_research_topic & 
+                                 all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         }
       }
     } else {
       if(input$input_university == "Todas") {
         if(input$input_research_topic == "Todos") {
-          map_data <- all_data[all_data$state_name == input$input_state & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$state_name == input$input_state & 
+                                 all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         } else {
-          map_data <- all_data[all_data$state_name == input$input_state & all_data$research_name == input$input_research_topic & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$state_name == input$input_state & 
+                                 all_data$research_name == input$input_research_topic & 
+                                 all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         }
       } else {
         if(input$input_research_topic == "Todos") {
-          map_data <- all_data[all_data$university == input$input_university & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$university == input$input_university & 
+                                 all_data$grade >= input$input_grade_range[1] &
+                                 all_data$grade <= input$input_grade_range[2],]
         } else {
-          map_data <- all_data[all_data$university == input$input_university & all_data$research_name == input$input_research_topic & all_data$grade >= input$input_grade_range[1] & all_data$grade <= input$input_grade_range[2],]
+          map_data <- all_data[all_data$university == input$input_university & 
+                                 all_data$research_name == input$input_research_topic & 
+                                 all_data$grade >= input$input_grade_range[1] & 
+                                 all_data$grade <= input$input_grade_range[2],]
         }
-        
       }
     } 
   })
   
+  # mudança/filtro nos dados do dataframe shape_brasil_df com base nos inputs do usuário (mapa)
   map_shapes <- reactive({ 
     if(input$input_state != "Todos") {
       map_shapes = shape_brasil_df[which(shape_brasil_df$ESTADOS == input$input_state),]
@@ -94,10 +104,14 @@ shinyServer <- function(input, output, session) {
     }
   })
   
+  # mudança/filtro nos dados do dataframe lineplot_1_data com base nos inputs do usuário (tela de gráficos)
   lineplot_data_1 <- reactive({ 
     
-    lineplot_data_1 <- if (input$input_research_2 == "Nenhum") lineplot_1_data[lineplot_1_data$research_name == input$input_research_1,] 
-    else lineplot_1_data[lineplot_1_data$research_name == input$input_research_1 | lineplot_1_data$research_name == input$input_research_2,]
+    lineplot_data_1 <- if (input$input_research_2 == "Nenhum") 
+      lineplot_1_data[lineplot_1_data$research_name == input$input_research_1,] 
+    else 
+      lineplot_1_data[lineplot_1_data$research_name == input$input_research_1 | 
+                        lineplot_1_data$research_name == input$input_research_2,]
     
   })
   
@@ -109,7 +123,7 @@ shinyServer <- function(input, output, session) {
     ggplot() + 
       geom_polygon(data = map_shapes(), aes(x = long, y = lat, group = group), fill = "#3d3d3d", color = "black", size = 0.15) +
       geom_point(data = map_data()[!duplicated(map_data()$code),], aes(x = longitude, y = latitude, color = as.factor(grade), size = 10, shape = graduation_level)) + 
-      scale_color_manual(name = "Conceito", breaks = mybreaks, values=c("red", "orange", "yellow", "darkgreen", "green")) +
+      scale_color_manual(name = "Conceito", values=c("red", "orange", "yellow", "darkgreen", "green")) +
       scale_shape_discrete(name = "Nível do Programa") +
       coord_map() + 
       guides(colour = guide_legend(override.aes = list(size = 5)), shape = guide_legend(override.aes = list(size = 5, color = "white")), size = FALSE) +

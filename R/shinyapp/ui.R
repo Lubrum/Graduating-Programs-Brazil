@@ -1,6 +1,3 @@
-#Created by: Luciano Brum
-#Last modified: 16 apr, 2020
-
 if (!require(shiny)) install.packages("shiny")
 library(shiny)
   

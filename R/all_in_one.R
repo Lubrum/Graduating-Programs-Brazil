@@ -1,6 +1,3 @@
-#Created by: Luciano Brum
-#Last modified: 16 apr, 2020
-
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # loading or installing packages
@@ -51,6 +48,9 @@ library(mapproj)
 
 if (!require(stringr)) install.packages("stringr")
 library(stringr)
+
+#if (!require(leaflet)) install.packages("leaflet")
+#library(leaflet)
 
 # reading data from csv
 universities_path <- "../csv/universities_after.xlsx"
@@ -380,7 +380,7 @@ shinyServer <- function(input, output, session) {
     ggplot() + 
     geom_polygon(data = map_shapes(), aes(x = long, y = lat, group = group), fill = "#3d3d3d", color = "black", size = 0.15) +
     geom_point(data = map_data()[!duplicated(map_data()$code),], aes(x = longitude, y = latitude, color = as.factor(grade), size = 10, shape = graduation_level)) + 
-    scale_color_manual(name = "Conceito", breaks = mybreaks, values=c("red", "orange", "yellow", "darkgreen", "green")) +
+    scale_color_manual(name = "Conceito", values=c("red", "orange", "yellow", "darkgreen", "green")) +
     scale_shape_discrete(name = "Nível do Programa") +
     coord_map() + 
     guides(colour = guide_legend(override.aes = list(size = 5)), shape = guide_legend(override.aes = list(size = 5, color = "white")), size = FALSE) +
@@ -421,4 +421,10 @@ shinyServer <- function(input, output, session) {
   })
 }
 
+
 shinyApp(shinyUI, shinyServer)
+
+#leaflet(all_data[!duplicated(all_data$code),]) %>%
+#addTiles() %>%
+#addMarkers(clusterOptions = markerClusterOptions(), ~longitude, ~latitude, popup = ~as.character(city_name), label = ~as.character(code))
+
