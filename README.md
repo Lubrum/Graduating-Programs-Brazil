@@ -2,14 +2,13 @@
 
 This project aims to share the current state and location of Brazilian Graduating Programs in Computer Science and related areas.
 
-
 # Motivation
 
 The purpose is to realize an exploratory analysis of available data about Computing Programs and generate meaningful visualizations.
 
 The project is separated in three stages:
 - Stage one: get the data from pdf and save into a dataframe and .csv file.
-- Stage two: validate and integrate new data to generate maps with Brazilian computer graduating programs.
+- Stage two: validate and integrate new data to generate maps with Brazilian computer graduating programs. [Check here to see only the maps](https://github.com/Lubrum/Graduating-Programs-Brazil/tree/master/images).
 - Stage three: using shiny to provide an interactive interface for the users.
 
 # Tools 
