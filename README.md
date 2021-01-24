@@ -1,3 +1,5 @@
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/Lubrum/Graduating-Programs-Brazil) ![GitHub last commit](https://img.shields.io/github/last-commit/Lubrum/Graduating-Programs-Brazil) ![GitHub repo size](https://img.shields.io/github/repo-size/Lubrum/Graduating-Programs-Brazil)
+
 # Summary
 
 This project aims to share the current state and location of Brazilian Graduating Programs in Computer Science and related areas.
