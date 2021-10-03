@@ -56,9 +56,9 @@ Everyone is free and encouraged to contribute with this project through Pull Req
 
 Soon a guideline will be provided.
 
-# Credits
+# Live Demo
 
-I want to give a special thanks to professor Alexandro Schaffer for providing this datasets for our analysis. 
+[Data Science Broon Shinyapp](https://data-science-broon.shinyapps.io/)
 
 # License
 
