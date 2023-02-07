@@ -58,7 +58,7 @@ Soon a guideline will be provided.
 
 # Live Demo
 
-[Data Science Broon Shinyapp](https://data-science-broon.shinyapps.io/)
+[Data Science Broon Shinyapp](https://data-science-broon.shinyapps.io/shinyapp/)
 
 # License
 
